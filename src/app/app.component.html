@@ -1,0 +1,16 @@
+<header class="app-header">
+  <div class="header-left">
+    <a href="https://atomics.in" target="_blank" rel="noopener noreferrer">
+      <h1>weirdo.com</h1>
+    </a>
+  </div>
+  <div class="header-right">
+    <button type="button" (click)="toggleTheme()" class="theme-toggle">
+      {{ isDark ? "Light Mode" : "Dark Mode" }}
+    </button>
+  </div>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

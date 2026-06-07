@@ -1,0 +1,150 @@
+:host {
+  display: block;
+  padding: 1rem;
+  color: var(--text);
+}
+
+.page-shell {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+}
+
+.page-header h1 {
+  color: var(--text);
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 2.75rem);
+}
+
+.panel-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.panel {
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 1rem;
+  background: var(--surface);
+  padding: 1.25rem;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.form-panel {
+  min-width: 320px;
+}
+
+.form-panel label,
+.field-row {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.field-row {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+input,
+textarea {
+  padding: 0.75rem 0.85rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 1rem;
+  color: var(--text);
+  background: transparent;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+button {
+  border: 0;
+  border-radius: 0.75rem;
+  padding: 0.85rem 1.25rem;
+  background: var(--primary);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button.secondary {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+button.danger {
+  background: var(--danger);
+}
+
+.status-messages {
+  margin-top: 0.5rem;
+}
+
+.error {
+  color: #b91c1c;
+}
+
+.success {
+  color: #166534;
+}
+
+.table-panel {
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  padding: 0.85rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+th {
+  font-weight: 600;
+}
+
+.row-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty-row {
+  text-align: center;
+  color: var(--muted);
+}
+
+@media (min-width: 900px) {
+  .panel-grid {
+    grid-template-columns: 360px minmax(0, 1fr);
+  }
+}
