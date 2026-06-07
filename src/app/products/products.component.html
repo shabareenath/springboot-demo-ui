@@ -22,6 +22,19 @@
           Price
           <input formControlName="price" type="number" min="0" step="0.01" />
         </label>
+        <label>
+          Image
+          <input
+            type="file"
+            accept="image/*"
+            (change)="onFileSelected($event)"
+          />
+        </label>
+
+        <div *ngIf="imagePreviewUrl" class="image-preview">
+          <p>Preview:</p>
+          <img [src]="imagePreviewUrl" alt="Selected image preview" />
+        </div>
 
         <div class="actions">
           <button type="submit" [disabled]="productForm.invalid">
@@ -59,6 +72,13 @@
         <tbody>
           <tr *ngFor="let product of products; let i = index">
             <td>{{ i + 1 }}</td>
+            <td class="thumb">
+              <img
+                *ngIf="product.imageUrl"
+                [src]="product.imageUrl"
+                [alt]="product.name"
+              />
+            </td>
             <td>{{ product.name }}</td>
             <td>{{ product.price | number: "1.2-2" }}</td>
             <td class="row-actions">

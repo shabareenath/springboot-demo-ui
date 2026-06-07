@@ -23,6 +23,8 @@ export class ProductsComponent implements OnInit {
   successMessage = '';
 
   productForm!: FormGroup;
+  selectedFile: File | null = null;
+  imagePreviewUrl: string | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -42,10 +44,34 @@ export class ProductsComponent implements OnInit {
     this.loadProducts();
   }
 
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      this.selectedFile = null;
+      this.imagePreviewUrl = null;
+      return;
+    }
+    this.selectedFile = input.files[0];
+    const reader = new FileReader();
+    reader.onload = () => (this.imagePreviewUrl = reader.result as string);
+    reader.readAsDataURL(this.selectedFile);
+  }
+
   loadProducts(): void {
     this.clearMessages();
     this.productService.list().subscribe({
-      next: (items: Product[]) => (this.products = items),
+      next: (items: Product[]) => {
+        // Ensure `imageUrl` is populated so the template can show thumbnails.
+        // If the API returns `imageUrl: null` but provides `imageName`, use
+        // a sensible fallback path (`/uploads/<imageName>`). If your API
+        // serves images from a different base, update the fallback accordingly
+        // or set `product.imageUrl` server-side.
+        this.products = items.map((p) => ({
+          ...p,
+          imageUrl:
+            p.imageUrl || (p.imageName ? `/uploads/${p.imageName}` : null),
+        }));
+      },
       error: () =>
         (this.errorMessage =
           'Unable to load products. Check your backend API.'),
@@ -98,24 +124,58 @@ export class ProductsComponent implements OnInit {
 
     if (payload.id) {
       // Update via PUT /products with id in body
-      this.productService.update(payload).subscribe({
-        next: () => {
-          this.successMessage = 'Product updated successfully.';
-          this.resetForm();
-          this.loadProducts();
-        },
-        error: () => (this.errorMessage = 'Failed to update the product.'),
-      });
+      // If a file is selected, send multipart FormData; otherwise send JSON
+      if (this.selectedFile) {
+        const form = new FormData();
+        form.append('id', String(payload.id));
+        form.append('name', payload.name);
+        form.append('price', String(payload.price));
+        if (this.selectedFile) {
+          form.append('image', this.selectedFile);
+        }
+        this.productService.update(form).subscribe({
+          next: () => {
+            this.successMessage = 'Product updated successfully.';
+            this.resetForm();
+            this.loadProducts();
+          },
+          error: () => (this.errorMessage = 'Failed to update the product.'),
+        });
+      } else {
+        this.productService.update(payload).subscribe({
+          next: () => {
+            this.successMessage = 'Product updated successfully.';
+            this.resetForm();
+            this.loadProducts();
+          },
+          error: () => (this.errorMessage = 'Failed to update the product.'),
+        });
+      }
     } else {
       // No id found — create new product
-      this.productService.create(payload).subscribe({
-        next: () => {
-          this.successMessage = 'Product added successfully.';
-          this.resetForm();
-          this.loadProducts();
-        },
-        error: () => (this.errorMessage = 'Failed to add the product.'),
-      });
+      if (this.selectedFile) {
+        const form = new FormData();
+        form.append('name', payload.name);
+        form.append('price', String(payload.price));
+        form.append('image', this.selectedFile);
+        this.productService.create(form).subscribe({
+          next: () => {
+            this.successMessage = 'Product added successfully.';
+            this.resetForm();
+            this.loadProducts();
+          },
+          error: () => (this.errorMessage = 'Failed to add the product.'),
+        });
+      } else {
+        this.productService.create(payload).subscribe({
+          next: () => {
+            this.successMessage = 'Product added successfully.';
+            this.resetForm();
+            this.loadProducts();
+          },
+          error: () => (this.errorMessage = 'Failed to add the product.'),
+        });
+      }
     }
   }
 
@@ -126,6 +186,8 @@ export class ProductsComponent implements OnInit {
       name: product.name,
       price: product.price,
     });
+    this.selectedFile = null;
+    this.imagePreviewUrl = product.imageUrl ?? null;
   }
 
   deleteProduct(product: Product): void {
@@ -154,6 +216,8 @@ export class ProductsComponent implements OnInit {
       price: 0,
     });
     this.clearMessages();
+    this.selectedFile = null;
+    this.imagePreviewUrl = null;
   }
 
   private clearMessages(): void {

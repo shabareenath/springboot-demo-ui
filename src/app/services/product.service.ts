@@ -15,15 +15,21 @@ export class ProductService {
     return this.http.get<Product[]>(API_BASE);
   }
 
-  create(product: Product): Observable<Product> {
-    return this.http.post<Product>(API_BASE, product);
+  create(productOrForm: Product | FormData): Observable<Product> {
+    if (productOrForm instanceof FormData) {
+      return this.http.post<Product>(API_BASE, productOrForm);
+    }
+    return this.http.post<Product>(API_BASE, productOrForm);
   }
 
   // The backend expects a PUT to /products with the full Product in the body
   // (JPA will use the id inside the entity to determine update vs insert).
-  update(product: Product): Observable<any> {
-    console.log(`ProductService.update: PUT ${API_BASE}`, product);
-    return this.http.put<any>(API_BASE, product);
+  update(productOrForm: Product | FormData): Observable<any> {
+    console.log(`ProductService.update: PUT ${API_BASE}`, productOrForm);
+    if (productOrForm instanceof FormData) {
+      return this.http.put<any>(API_BASE, productOrForm);
+    }
+    return this.http.put<any>(API_BASE, productOrForm);
   }
 
   delete(id: number): Observable<void> {
